@@ -94,6 +94,23 @@ export const DEFAULT_MOIRE_CONFIG: MoireConfig = {
   speed: 1.0,
 };
 
+export function extractMoireConfig(values: Record<string, unknown>): MoireConfig {
+  return {
+    patternType: (typeof values["geometry.patternType"] === "string" ? values["geometry.patternType"] : DEFAULT_MOIRE_CONFIG.patternType) as PatternGeometryType,
+    paletteKey: typeof values["geometry.paletteKey"] === "string" ? values["geometry.paletteKey"] : DEFAULT_MOIRE_CONFIG.paletteKey,
+    density: typeof values["density.density"] === "number" ? values["density.density"] : DEFAULT_MOIRE_CONFIG.density,
+    lineWidth: typeof values["density.lineWidth"] === "number" ? values["density.lineWidth"] : DEFAULT_MOIRE_CONFIG.lineWidth,
+    layerCount: typeof values["density.layerCount"] === "number" ? values["density.layerCount"] : DEFAULT_MOIRE_CONFIG.layerCount,
+    angularOffsetDeg: typeof values["interference.angularOffsetDeg"] === "number" ? values["interference.angularOffsetDeg"] : DEFAULT_MOIRE_CONFIG.angularOffsetDeg,
+    centerDistance: typeof values["interference.centerDistance"] === "number" ? values["interference.centerDistance"] : DEFAULT_MOIRE_CONFIG.centerDistance,
+    warpAmplitude: typeof values["interference.warpAmplitude"] === "number" ? values["interference.warpAmplitude"] : DEFAULT_MOIRE_CONFIG.warpAmplitude,
+    chromaShift: typeof values["interference.chromaShift"] === "number" ? values["interference.chromaShift"] : DEFAULT_MOIRE_CONFIG.chromaShift,
+    speed: typeof values["interference.speed"] === "number" ? values["interference.speed"] / 100 : DEFAULT_MOIRE_CONFIG.speed,
+    rotationTurns: DEFAULT_MOIRE_CONFIG.rotationTurns,
+    warpFrequency: DEFAULT_MOIRE_CONFIG.warpFrequency,
+  };
+}
+
 export interface MoireLayerState {
   index: number;
   centerX: number;

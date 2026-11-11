@@ -3,12 +3,30 @@ import { composeToolcraftApp } from "@/toolcraft/runtime/react";
 
 import { appSchema } from "./app-schema";
 import { KineticMoireLoomCanvas } from "./kinetic-moire-loom-canvas";
-import { evaluateMoireScene, DEFAULT_MOIRE_CONFIG } from "./kinetic-moire-loom-model";
+import {
+  evaluateMoireScene,
+  extractMoireConfig,
+} from "./kinetic-moire-loom-model";
 import { renderMoireScene } from "./kinetic-moire-loom-renderer";
 
 export const appComposition = composeToolcraftApp(appSchema, {
   scene: {
     canvasContent: <KineticMoireLoomCanvas />,
+    rasterFrameRenderer: {
+      baseFileName: "kinetic-moire-loom",
+      renderFrame: ({ context, frame, timelineProgress, state }) => {
+        const config = extractMoireConfig(state.values);
+        const scene = evaluateMoireScene(
+          config,
+          timelineProgress,
+          frame.width,
+          frame.height,
+        );
+        context.save();
+        context.translate(frame.x, frame.y);
+        renderMoireScene(context, scene, config, frame.width, frame.height);
+        context.restore();
+      },
+    },
   },
 });
-
