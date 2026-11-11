@@ -81,14 +81,14 @@ export interface MoireConfig {
 
 export const DEFAULT_MOIRE_CONFIG: MoireConfig = {
   patternType: "concentric-rings",
-  density: 64,
+  density: 48,
   layerCount: 2,
   angularOffsetDeg: 12,
-  centerDistance: 35,
+  centerDistance: 15,
   rotationTurns: 1,
-  lineWidth: 2,
+  lineWidth: 3,
   warpFrequency: 3,
-  warpAmplitude: 12,
+  warpAmplitude: 0,
   chromaShift: 4,
   paletteKey: "op-art-mono",
   speed: 1.0,
@@ -138,7 +138,9 @@ export function evaluateMoireScene(
   viewWidth = 1000,
   viewHeight = 700,
 ): EvaluatedMoireScene {
-  const normT = ((t % 1) + 1) % 1;
+  const speed = typeof config.speed === "number" && Number.isFinite(config.speed) ? config.speed : 1.0;
+  const effectiveT = t * speed;
+  const normT = ((effectiveT % 1) + 1) % 1;
   const palette = MOIRE_PALETTES[config.paletteKey] ?? MOIRE_PALETTES["op-art-mono"];
 
   const cx = viewWidth / 2;

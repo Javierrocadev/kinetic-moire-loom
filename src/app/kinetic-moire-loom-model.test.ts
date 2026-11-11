@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_MOIRE_CONFIG,
   evaluateMoireScene,
+  extractMoireConfig,
   MOIRE_PALETTES,
 } from "./kinetic-moire-loom-model";
 
@@ -40,5 +41,19 @@ describe("Kinetic Moiré Loom Mathematical Model", () => {
     expect(MOIRE_PALETTES["ultraviolet-pulse"]).toBeDefined();
     expect(MOIRE_PALETTES["solar-gold"]).toBeDefined();
     expect(MOIRE_PALETTES["blueprint-cobalt"]).toBeDefined();
+  });
+
+  it("extracts and scales ultra-low minimum speed correctly", () => {
+    const configAtMin = extractMoireConfig({ "interference.speed": 1 });
+    expect(configAtMin.speed).toBeCloseTo(0.01, 4);
+
+    const sceneDefault = evaluateMoireScene(DEFAULT_MOIRE_CONFIG, 0.5);
+    const sceneUltraSlow = evaluateMoireScene(configAtMin, 0.5);
+
+    // At 1% speed, angular progression should be 1/100th of default speed
+    const defaultRotLayer0 = sceneDefault.layers[0].rotationRad;
+    const slowRotLayer0 = sceneUltraSlow.layers[0].rotationRad;
+    expect(slowRotLayer0).toBeLessThan(defaultRotLayer0);
+    expect(slowRotLayer0).toBeCloseTo(sceneUltraSlow.layers[0].rotationRad, 4);
   });
 });
