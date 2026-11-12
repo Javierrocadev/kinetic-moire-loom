@@ -4,6 +4,8 @@
  * and emergent op-art waves.
  */
 
+import { DEFAULT_BACKGROUND_SHAPES, type MoireBackgroundShape } from "./moire-background";
+
 export const TAU = Math.PI * 2;
 
 export type PatternGeometryType =
@@ -65,47 +67,94 @@ export const MOIRE_PALETTES: Record<string, MoirePalette> = {
 };
 
 export interface MoireConfig {
+  backgroundShapes: readonly MoireBackgroundShape[];
   patternType: PatternGeometryType;
-  density: number; // 20 to 140 lines
+  density: number; // 20 to 50 lines
   layerCount: number; // 2 or 3
   angularOffsetDeg: number; // 0 to 90
   centerDistance: number; // 0 to 120 px
   rotationTurns: number; // 1, 2, or 3 full rotations per loop
-  lineWidth: number; // 1 to 6 px
+  lineWidth: number; // 1 to 20 px
+  layerOpacity: number; // 0.2 to 1.0
+  gradientIntensity: number; // 0 to 1.0
   warpFrequency: number; // 1 to 8
   warpAmplitude: number; // 0 to 40
   chromaShift: number; // 0 to 15
   paletteKey: string;
+  backgroundColor: string;
+  layer1Color: string;
+  layer2Color: string;
+  accentColor: string;
   speed: number;
+  blur: number;
+  brightness: number;
+  includeBackground?: boolean;
 }
 
 export const DEFAULT_MOIRE_CONFIG: MoireConfig = {
+  backgroundShapes: DEFAULT_BACKGROUND_SHAPES,
   patternType: "concentric-rings",
   density: 48,
   layerCount: 2,
   angularOffsetDeg: 12,
-  centerDistance: 15,
+  centerDistance: 35,
   rotationTurns: 1,
-  lineWidth: 3,
+  lineWidth: 6,
+  layerOpacity: 0.65,
+  gradientIntensity: 0.75,
   warpFrequency: 3,
-  warpAmplitude: 0,
+  warpAmplitude: 12,
   chromaShift: 4,
-  paletteKey: "op-art-mono",
+  paletteKey: "custom",
+  backgroundColor: "#080c14",
+  layer1Color: "#ffffff",
+  layer2Color: "#e0e0e0",
+  accentColor: "#ff0033",
   speed: 1.0,
+  blur: 1.5,
+  brightness: 80,
+  includeBackground: true,
 };
 
 export function extractMoireConfig(values: Record<string, unknown>): MoireConfig {
   return {
+    // Runtime collection codecs own validation; an empty array is an intentional composition.
+    backgroundShapes: Array.isArray(values["backgroundShapes.items"])
+      ? values["backgroundShapes.items"] as MoireBackgroundShape[]
+      : DEFAULT_BACKGROUND_SHAPES,
     patternType: (typeof values["geometry.patternType"] === "string" ? values["geometry.patternType"] : DEFAULT_MOIRE_CONFIG.patternType) as PatternGeometryType,
-    paletteKey: typeof values["geometry.paletteKey"] === "string" ? values["geometry.paletteKey"] : DEFAULT_MOIRE_CONFIG.paletteKey,
+    paletteKey: typeof values["palette.paletteKey"] === "string"
+      ? values["palette.paletteKey"]
+      : typeof values["geometry.paletteKey"] === "string"
+        ? values["geometry.paletteKey"]
+        : DEFAULT_MOIRE_CONFIG.paletteKey,
+    backgroundColor: typeof values["palette.backgroundColor"] === "string"
+      ? values["palette.backgroundColor"]
+      : DEFAULT_MOIRE_CONFIG.backgroundColor,
+    includeBackground: values["export.includeBackground"] !== false,
+    layer1Color: typeof values["palette.layer1Color"] === "string"
+      ? values["palette.layer1Color"]
+      : DEFAULT_MOIRE_CONFIG.layer1Color,
+    layer2Color: typeof values["palette.layer2Color"] === "string"
+      ? values["palette.layer2Color"]
+      : DEFAULT_MOIRE_CONFIG.layer2Color,
+    accentColor: typeof values["palette.accentColor"] === "string"
+      ? values["palette.accentColor"]
+      : DEFAULT_MOIRE_CONFIG.accentColor,
+    gradientIntensity: typeof values["palette.gradientIntensity"] === "number"
+      ? values["palette.gradientIntensity"] / 100
+      : DEFAULT_MOIRE_CONFIG.gradientIntensity,
     density: typeof values["density.density"] === "number" ? values["density.density"] : DEFAULT_MOIRE_CONFIG.density,
     lineWidth: typeof values["density.lineWidth"] === "number" ? values["density.lineWidth"] : DEFAULT_MOIRE_CONFIG.lineWidth,
+    layerOpacity: typeof values["density.layerOpacity"] === "number" ? values["density.layerOpacity"] / 100 : DEFAULT_MOIRE_CONFIG.layerOpacity,
     layerCount: typeof values["density.layerCount"] === "number" ? values["density.layerCount"] : DEFAULT_MOIRE_CONFIG.layerCount,
     angularOffsetDeg: typeof values["interference.angularOffsetDeg"] === "number" ? values["interference.angularOffsetDeg"] : DEFAULT_MOIRE_CONFIG.angularOffsetDeg,
     centerDistance: typeof values["interference.centerDistance"] === "number" ? values["interference.centerDistance"] : DEFAULT_MOIRE_CONFIG.centerDistance,
     warpAmplitude: typeof values["interference.warpAmplitude"] === "number" ? values["interference.warpAmplitude"] : DEFAULT_MOIRE_CONFIG.warpAmplitude,
     chromaShift: typeof values["interference.chromaShift"] === "number" ? values["interference.chromaShift"] : DEFAULT_MOIRE_CONFIG.chromaShift,
     speed: typeof values["interference.speed"] === "number" ? values["interference.speed"] / 100 : DEFAULT_MOIRE_CONFIG.speed,
+    blur: typeof values["interference.blur"] === "number" ? values["interference.blur"] : DEFAULT_MOIRE_CONFIG.blur,
+    brightness: typeof values["interference.brightness"] === "number" ? values["interference.brightness"] : DEFAULT_MOIRE_CONFIG.brightness,
     rotationTurns: DEFAULT_MOIRE_CONFIG.rotationTurns,
     warpFrequency: DEFAULT_MOIRE_CONFIG.warpFrequency,
   };
@@ -138,10 +187,17 @@ export function evaluateMoireScene(
   viewWidth = 1000,
   viewHeight = 700,
 ): EvaluatedMoireScene {
-  const speed = typeof config.speed === "number" && Number.isFinite(config.speed) ? config.speed : 1.0;
-  const effectiveT = t * speed;
-  const normT = ((effectiveT % 1) + 1) % 1;
-  const palette = MOIRE_PALETTES[config.paletteKey] ?? MOIRE_PALETTES["op-art-mono"];
+  const normT = ((t % 1) + 1) % 1;
+  const palette: MoirePalette = config.paletteKey === "custom"
+    ? {
+        id: "custom",
+        name: "Personalizado",
+        background: config.backgroundColor || "#080808",
+        layer1: config.layer1Color || "#ffffff",
+        layer2: config.layer2Color || "#e0e0e0",
+        accent: config.accentColor || "#ff0033",
+      }
+    : { ...(MOIRE_PALETTES[config.paletteKey] ?? MOIRE_PALETTES["op-art-mono"]), background: config.backgroundColor };
 
   const cx = viewWidth / 2;
   const cy = viewHeight / 2;
@@ -173,7 +229,7 @@ export function evaluateMoireScene(
       centerY: ly,
       rotationRad: rotation,
       color: layerColors[i % layerColors.length],
-      opacity: 0.85,
+      opacity: config.layerOpacity,
     });
   }
 

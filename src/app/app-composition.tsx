@@ -24,6 +24,9 @@ export const appComposition = composeToolcraftApp(appSchema, {
         );
         context.save();
         context.translate(frame.x, frame.y);
+        if (config.blur > 0 || config.brightness !== 100) {
+          context.filter = `blur(${config.blur}px) brightness(${config.brightness}%)`;
+        }
         renderMoireScene(context, scene, config, frame.width, frame.height);
         context.restore();
       },

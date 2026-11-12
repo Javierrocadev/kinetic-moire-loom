@@ -1,1 +1,127 @@
-null
+{
+  "version": 2,
+  "appId": "kinetic-moire-loom",
+  "state": {
+    "values": {
+      "canvas.workspaceBackground": "dots",
+      "canvas.aspectRatio": {
+        "height": 9,
+        "mode": "preset",
+        "value": "16:9",
+        "width": 16
+      },
+      "canvas.size.width": 1920,
+      "canvas.size.height": 1080,
+      "palette.backgroundColor": "#F8FAFC",
+      "backgroundShapes.items": [
+        {
+          "color": {
+            "hex": "#0078E8",
+            "opacity": 100
+          },
+          "x": -65,
+          "y": 30,
+          "position": {
+            "x": -0.65,
+            "y": 0.3
+          },
+          "width": 65,
+          "height": 75,
+          "softness": 85
+        },
+        {
+          "color": {
+            "hex": "#F77ED1",
+            "opacity": 85
+          },
+          "x": 50,
+          "y": -85,
+          "position": {
+            "x": 0.5,
+            "y": -0.85
+          },
+          "width": 65,
+          "height": 65,
+          "softness": 100
+        }
+      ],
+      "geometry.patternType": "radial-spokes",
+      "palette.paletteKey": "custom",
+      "palette.layer1Color": "#FFFFFF",
+      "palette.layer2Color": "#FFFFFF",
+      "palette.accentColor": "#FFFFFF",
+      "palette.gradientIntensity": 50,
+      "density.density": 22,
+      "density.lineWidth": 10,
+      "density.layerOpacity": 40,
+      "density.layerCount": 3,
+      "interference.angularOffsetDeg": 38,
+      "interference.centerDistance": 120,
+      "interference.warpAmplitude": 30,
+      "interference.chromaShift": 3,
+      "interference.speed": 11,
+      "interference.blur": 4.5,
+      "interference.brightness": 100,
+      "export.image.format": "png",
+      "export.image.resolution": "4k",
+      "export.video.format": "mp4",
+      "export.video.resolution": "current"
+    },
+    "canvas": {
+      "offset": {
+        "x": -228.2691338709052,
+        "y": -11.19560379296641
+      },
+      "size": {
+        "height": 1080,
+        "unit": "px",
+        "width": 1920
+      },
+      "zoom": 75,
+      "mode": "finite"
+    },
+    "panels": {
+      "controls": {
+        "collapsedSections": {},
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "scrollTop": 0
+      },
+      "layers": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "timeline": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        },
+        "extended": true
+      },
+      "toolbar": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    "timeline": {
+      "currentTimeSeconds": 0.9366999999877232,
+      "durationSeconds": 8,
+      "expanded": false,
+      "isLooping": true,
+      "isPlaying": true,
+      "selectedKeyframeId": null,
+      "keyframeGroups": []
+    },
+    "layers": [],
+    "selectedLayerId": null,
+    "mediaAssets": []
+  },
+  "resources": [],
+  "theme": "dark"
+}

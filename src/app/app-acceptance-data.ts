@@ -5,6 +5,7 @@ import type {
   ToolcraftTransferMode,
 } from "./acceptance/types";
 import { appSchema } from "./app-schema";
+import { backgroundShapeAcceptance, backgroundShapeInventory } from "./moire-background-acceptance";
 
 const starterPersistenceSlices =
   appSchema.persistence.storage === "localStorage"
@@ -24,6 +25,7 @@ export const appProductReadiness: ToolcraftProductReadiness = {
 };
 
 export const appAcceptance: readonly ToolcraftComponentAcceptance[] = [
+  ...backgroundShapeAcceptance,
   {
     automated: true,
     automatedTestName:
@@ -48,4 +50,4 @@ export const appAcceptance: readonly ToolcraftComponentAcceptance[] = [
 ];
 
 // Product entries use the same explicit stable section IDs as appSchema.
-export const appControlSectionInventory: readonly ToolcraftControlSectionInventoryEntry[] = [];
+export const appControlSectionInventory: readonly ToolcraftControlSectionInventoryEntry[] = backgroundShapeInventory;
